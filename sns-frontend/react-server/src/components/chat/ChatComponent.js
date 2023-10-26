@@ -8,9 +8,10 @@ import { Link } from 'react-router-dom';
 
 const ChatContainer = styled.div`
   padding: 20px;
-  background-color: #f2f2f2;
+  background-color: #fafaf5;
   width: 600px;
-  margin: auto;
+  // margin: auto;
+  margin-top: 20px;
   margin-left: 20px;
   height: 700px;
   display: flex;
@@ -68,7 +69,7 @@ const StyledInput = styled.input`
     font-family: 'UhBeeKeongKeong', sans-serif;
 
     &:hover {
-      background: rgb(77, 77, 77);
+      background: #5d962c;
       color: #fff;
     }
   }
@@ -198,39 +199,10 @@ const StyledChatBtn = styled.button`
   align-self: flex-end; /* 맨 아래에 정렬 */
 
   &:hover {
-    background: rgb(77, 77, 77);
+    background: #5d962c;
     color: #fff;
   }
 `;
-
-// const StyledChatMine = styled.div`
-//     position: relative;
-//     background: #426B1F;
-//     color: #FFFFFF;
-//     font-size: 16px;
-//     padding: 10px;
-//     border-radius: 10px;
-//     max-width: 60%;
-//     float: right;
-//     margin: 10px auto;
-//     margin-bottom:20px;
-//     align-self: flex-end;
-//     word-wrap: break-word; /* 긴 텍스트가 말풍선을 넘어갈 경우 자동으로 줄 바꿈 */
-// `;
-
-// const StyledChatOther = styled.div`
-//   position: relative;
-//   background: #ffffff;
-//   border: 1px solid #ddd;
-//   font-size: 16px;
-//   padding: 10px;
-//   border-radius: 10px;
-//   max-width: 80%;
-//   float: left;
-//   margin: 10px auto;
-//   align-self: flex-start;
-//   word-wrap: break-word; /* 긴 텍스트가 말풍선을 넘어갈 경우 자동으로 줄 바꿈 */
-// `;
 
 const DateLine = styled.div`
   display: flex;
@@ -264,9 +236,9 @@ const TranslateButtonContainer = styled.div`
   margin-top: 10px; /* 번역 버튼을 상단에서 하단으로 이동 */
 `;
 
-const ChatItem = ({ chatLog, loginUser, targetLanguage }) => {
+const ChatItem = ({ chatLog, loginUser, targetLanguage, onTTS }) => {
   const { _id, room, user, chat, files, createdAt, translated } = chatLog;
-  const roomId = _id;
+  const clovaVoiceSupportLanguages = ['ko', 'en', 'zh-CN', 'zh-TW', 'ja', 'es'];
   return (
     <ChatMessage
       className={
@@ -274,12 +246,35 @@ const ChatItem = ({ chatLog, loginUser, targetLanguage }) => {
       }
     >
       {chat}
-      {translated.map((result) => {
-        if (result.langCode === targetLanguage) {
-          return <span key={result.langCode}>({result.txt})</span>;
-        }
-        return null; // 조건을 만족하지 않으면 null 반환
-      })}
+      {translated?.[targetLanguage] ? (
+        <span>{`(${translated[targetLanguage]})`}</span>
+      ) : null}
+      <span>
+        {translated?.[targetLanguage + '-voice'] ? (
+          <audio
+            controls
+            src={
+              'https://kr.object.ncloudstorage.com/bitcamp-nc7-bucket-25/clova_voice/' +
+              translated?.[targetLanguage + '-voice'] +
+              '.mp3'
+            }
+          />
+        ) : translated?.[targetLanguage] &&
+          clovaVoiceSupportLanguages.includes(targetLanguage) ? (
+          <button
+            onClick={(e) =>
+              onTTS({
+                chatId: _id,
+                roomId: room,
+                language: targetLanguage,
+                text: translated[targetLanguage],
+              })
+            }
+          >
+            tts
+          </button>
+        ) : null}
+      </span>
     </ChatMessage>
   );
 };
@@ -349,6 +344,7 @@ const ChatComponent = ({
   chatTxt,
   onSendChat,
   onTranslate,
+  onTTS,
   targetLanguage,
   setTargetLanguage,
   onLoadBeforeChats,
@@ -367,144 +363,153 @@ const ChatComponent = ({
   let currentDate = null;
 
   return (
-    <ChatContainer>
-      {room && (
-        <TitleStyle>{` ${room.users[0].nick}, ${room.users[1].nick}`}</TitleStyle>
-      )}
-      <LanguageSelectContainer>
-        {LanguageOptions.map((option) => (
-          <div key={option.value}>
-            {' '}
-            {/* 각 요소를 div 등의 요소로 감싸기 */}
-            <LanguageAbbreviation>{option.abbreviation}</LanguageAbbreviation>
-            <FlagIcon
-              src={option.flag}
-              alt={option.label}
-              selected={option.value === targetLanguage}
-              onClick={() => setTargetLanguage(option.value)}
-            />
-          </div>
-        ))}
-      </LanguageSelectContainer>
+    user && (
+      <ChatContainer>
+        {room && (
+          // <TitleStyle>{` ${room.users[0].nick}, ${room.users[1].nick}`}</TitleStyle>
+          <TitleStyle>
+            {` ${room.users[0].nick}`}{' '}
+            {room.users.length > 1 ? `, ${room.users[1].nick}` : ''}
+          </TitleStyle>
+        )}
+        <LanguageSelectContainer>
+          {LanguageOptions.map((option) => (
+            <div key={option.value}>
+              {' '}
+              {/* 각 요소를 div 등의 요소로 감싸기 */}
+              <LanguageAbbreviation>{option.abbreviation}</LanguageAbbreviation>
+              <FlagIcon
+                src={option.flag}
+                alt={option.label}
+                selected={option.value === targetLanguage}
+                onClick={() => setTargetLanguage(option.value)}
+              />
+            </div>
+          ))}
+        </LanguageSelectContainer>
 
-      <StyledChatList
-        onScroll={async (e) => {
-          const element = e.target;
-          if (element.scrollTop === 0) {
-            setBeforeScrollHeight(element.scrollHeight);
-            await onLoadBeforeChats();
-            element.scrollTo({
-              top: element.scrollHeight - beforeScrollHeight,
-              left: 0,
-              behavior: 'instant',
-            });
-            console.log(element.scrollHeight - beforeScrollHeight);
-          }
-        }}
-      >
-        <ChatMessage>
-          {chats &&
-            chats.map((chatLog, index) => {
-              // 현재 메시지 날짜
-              const messageDate = new Date(
-                chatLog.createdAt
-              ).toLocaleDateString();
+        <StyledChatList
+          onScroll={async (e) => {
+            const element = e.target;
+            if (element.scrollTop === 0) {
+              setBeforeScrollHeight(element.scrollHeight);
+              await onLoadBeforeChats();
+              element.scrollTo({
+                top: element.scrollHeight - beforeScrollHeight,
+                left: 0,
+                behavior: 'instant',
+              });
+              console.log(element.scrollHeight - beforeScrollHeight);
+            }
+          }}
+        >
+          <ChatMessage>
+            {chats &&
+              chats.map((chatLog, index) => {
+                // 현재 메시지 날짜
+                const messageDate = new Date(
+                  chatLog.createdAt
+                ).toLocaleDateString();
 
-              // 날짜 변화 체크
-              const isDateChanged = currentDate !== messageDate;
+                // 날짜 변화 체크
+                const isDateChanged = currentDate !== messageDate;
 
-              // 현재 날짜 업데이트
-              currentDate = messageDate;
+                // 현재 날짜 업데이트
+                currentDate = messageDate;
 
-              return (
-                <div key={chatLog._id}>
-                  {isDateChanged && (
+                return (
+                  <div key={chatLog._id}>
+                    {isDateChanged && (
+                      <div>
+                        {/* 날짜가 바뀌었을 때 구분선과 날짜를 표시 */}
+                        <br />
+                        <DateLine>{messageDate}</DateLine>
+                        <br />
+                      </div>
+                    )}
+
+                    {/* 나머지 채팅 메시지 표시 */}
                     <div>
-                      {/* 날짜가 바뀌었을 때 구분선과 날짜를 표시 */}
-                      <br />
-                      <DateLine>{messageDate}</DateLine>
-                      <br />
-                    </div>
-                  )}
-
-                  {/* 나머지 채팅 메시지 표시 */}
-                  <div>
-                    <div>
-                      {user.no !== chatLog.user.mno && (
-                        <UserName className={'UserName'}>
-                          <Link to={`/myPage/${chatLog.user.mno}`}>
-                            <UserImage
-                              src={
-                                chatLog.user.photo
-                                  ? `https://kr.object.ncloudstorage.com/bitcamp-nc7-bucket-14/sns_member/${chatLog.user.photo}`
-                                  : 'images/default.jpg'
-                              }
-                            />
-                          </Link>
-                          {`${chatLog.user.nick}`}
-                        </UserName>
-                      )}
-                    </div>
-                    <div>
-                      <ChatItem
-                        chatLog={chatLog}
-                        loginUser={user}
-                        targetLanguage={targetLanguage}
-                      />
-                      {user.no !== chatLog.user.mno && (
-                        <TimeStampOther>{`${new Date(
-                          chatLog.createdAt
-                        ).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}`}</TimeStampOther>
-                      )}
-                      {user.no === chatLog.user.mno && (
-                        <TimeStampMine>{`${new Date(
-                          chatLog.createdAt
-                        ).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}`}</TimeStampMine>
-                      )}
-                    </div>
-                    <div>
-                      {user.no !== chatLog.user.mno && (
-                        <div>
-                          <TranslateText onClick={(e) => onTranslate(chatLog)}>
-                            <img src="/images/tricon.png" alt="번역" />
-                          </TranslateText>
-                        </div>
-                      )}
+                      <div>
+                        {user && user.no !== chatLog.user.mno && (
+                          <UserName className={'UserName'}>
+                            <Link to={`/myPage/${chatLog.user.mno}`}>
+                              <UserImage
+                                src={
+                                  chatLog.user.photo
+                                    ? `https://kr.object.ncloudstorage.com/bitcamp-nc7-bucket-14/sns_member/${chatLog.user.photo}`
+                                    : 'images/default.jpg'
+                                }
+                              />
+                            </Link>
+                            {`${chatLog.user.nick}`}
+                          </UserName>
+                        )}
+                      </div>
+                      <div>
+                        <ChatItem
+                          chatLog={chatLog}
+                          loginUser={user}
+                          targetLanguage={targetLanguage}
+                          onTTS={onTTS}
+                        />
+                        {user.no !== chatLog.user.mno && (
+                          <TimeStampOther>{`${new Date(
+                            chatLog.createdAt
+                          ).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}`}</TimeStampOther>
+                        )}
+                        {user.no === chatLog.user.mno && (
+                          <TimeStampMine>{`${new Date(
+                            chatLog.createdAt
+                          ).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}`}</TimeStampMine>
+                        )}
+                      </div>
+                      <div>
+                        {user.no !== chatLog.user.mno && (
+                          <div>
+                            <TranslateText
+                              onClick={(e) => onTranslate(chatLog)}
+                            >
+                              <img src="/images/tricon.png" alt="번역" />
+                            </TranslateText>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          <div ref={messageEndRef}></div> {/* Scroll to this div */}
-        </ChatMessage>
-      </StyledChatList>
-      <SendChatBlock>
-        <StyledSubmitForm onSubmit={onSendChat}>
-          <StyledInput
-            type="text"
-            onChange={onChange}
-            value={chatTxt}
-            name="chatTxt"
-            className="inputChatTxt"
-            placeholder="메시지를 입력하세요"
-          />
-          {/* <StyledInput
+                );
+              })}
+            <div ref={messageEndRef}></div> {/* Scroll to this div */}
+          </ChatMessage>
+        </StyledChatList>
+        <SendChatBlock>
+          <StyledSubmitForm onSubmit={onSendChat}>
+            <StyledInput
+              type="text"
+              onChange={onChange}
+              value={chatTxt}
+              name="chatTxt"
+              className="inputChatTxt"
+              placeholder="메시지를 입력하세요"
+            />
+            {/* <StyledInput
             type="file"
             onChange={onChangeFile}
             accept="image/*"
             ref={inputFile}
             className="inputFile"
           /> */}
-          <StyledChatBtn type="submit">보내기</StyledChatBtn>
-        </StyledSubmitForm>
-      </SendChatBlock>
-    </ChatContainer>
+            <StyledChatBtn type="submit">보내기</StyledChatBtn>
+          </StyledSubmitForm>
+        </SendChatBlock>
+      </ChatContainer>
+    )
   );
 };
 

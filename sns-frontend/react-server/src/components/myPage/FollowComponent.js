@@ -39,9 +39,12 @@ const ToggleLabel = styled.label`
 
 const StyledChatButton = styled.button`
   margin-top: 25px;
-  color: #426b1f; 
-  background-color: transparent; 
+  color: #426b1f;
+  background-color: transparent;
   border: 1px solid transparent;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 const FollowComponent = ({
   user,
@@ -76,7 +79,7 @@ const FollowComponent = ({
               handleUnfollow={handleUnfollow}
               handleFollow={handleFollow}
             />
-            <Link to={`/room?mno1=${followItem.no}&mno2=${user.no}`}>
+            <Link to={`/room?mno1=${user.no}&mno2=${followItem.no}`}>
               <StyledChatButton>
                 <img src="/images/dm.png" alt="채팅하기" />
               </StyledChatButton>

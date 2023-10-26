@@ -782,3 +782,4 @@ node_modules/
 temp/
 *.properties
 snsapp-key.pem
+clova/

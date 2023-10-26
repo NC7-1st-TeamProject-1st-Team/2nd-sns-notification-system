@@ -15,7 +15,7 @@ const PaginationLink = styled(Link)`
   text-align: center;
   margin-right: 4px;
   border-radius: 50%;
-  background-color: #f2f2f2;
+  background-color: #fafaf5;
   text-decoration: none;
   color: black;
 
@@ -38,6 +38,14 @@ const buildLink = ({ location, query, page }) => {
 const Pagination = ({ page, lastPage, query }) => {
   const location = useLocation();
 
+  //페이지네이션 위로 스크롤
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   return (
     <>
       <PageLabel>
@@ -52,6 +60,8 @@ const Pagination = ({ page, lastPage, query }) => {
                     page: 1,
                   })
             }
+            className={page === 1 ? 'pagination-link-active' : ''}
+            onClick={scrollToTop}
           >
             {1}
           </PaginationLink>
@@ -67,6 +77,8 @@ const Pagination = ({ page, lastPage, query }) => {
                     page: parseInt(page) - 1,
                   })
             }
+            className={page === page - 1 ? 'pagination-link-active' : ''}
+            onClick={scrollToTop}
           >
             {page - 1}
           </PaginationLink>
@@ -77,6 +89,8 @@ const Pagination = ({ page, lastPage, query }) => {
             query,
             page,
           })}
+          className="pagination-link-active"
+          onClick={scrollToTop}
         >
           {page}
         </PaginationLink>
@@ -91,11 +105,13 @@ const Pagination = ({ page, lastPage, query }) => {
                     page: parseInt(page) + 1,
                   })
             }
+            className={page === lastPage - 1 ? 'pagination-link-active' : ''}
+            onClick={scrollToTop}
           >
             {parseInt(page) + 1}
           </PaginationLink>
         )}
-        {parseInt(page) == parseInt(lastPage) ? null : (
+        {parseInt(page) >= parseInt(lastPage) ? null : (
           <PaginationLink
             to={
               page === lastPage
@@ -106,6 +122,8 @@ const Pagination = ({ page, lastPage, query }) => {
                     page: lastPage,
                   })
             }
+            className={page === lastPage ? 'pagination-link-active' : ''}
+            onClick={scrollToTop}
           >
             {lastPage}
           </PaginationLink>
@@ -115,5 +133,4 @@ const Pagination = ({ page, lastPage, query }) => {
     </>
   );
 };
-
 export default Pagination;

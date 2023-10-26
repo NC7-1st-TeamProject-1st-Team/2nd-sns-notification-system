@@ -51,7 +51,7 @@ const LoginForm = styled.form`
 `;
 const StyledInput = styled.input`
   border: none;
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid #fafaf5;
   margin-bottom: 10px;
   border-radius: 3px;
   outline: none;
@@ -73,6 +73,11 @@ const SubmitButton = styled(Button)`
   background-color: #426b1f;
   cursor: pointer;
   outline: none;
+
+  &:hover {
+    background-color: #5d962c;
+    color: white;
+  }
 `;
 
 const LoginComponent = ({

@@ -14,11 +14,18 @@ import { useDispatch, useSelector } from 'react-redux';
 // import { useLocation, useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { socket } from '../../socket';
+import { roomList } from '../../modules/rooms';
 
 const ChatContainer = () => {
   // const params = useParams();
   const dispatch = useDispatch();
-  const [targetLanguage, setTargetLanguage] = useState('ko');
+  const [targetLanguage, _setTargetLanguage] = useState('ko');
+  const targetLanguageRef = useRef(targetLanguage);
+  const setTargetLanguage = (data) => {
+    targetLanguageRef.current = data;
+    _setTargetLanguage(data);
+  };
+
   const { room, chats, newChat, chatTxt, error, user, translatedChat, page } =
     useSelector(({ chats, auth }) => ({
       room: chats.room,
@@ -32,11 +39,11 @@ const ChatContainer = () => {
     }));
 
   const { search } = useLocation();
-  const { mno1, mno2 } = qs.parse(search, { ignoreQueryPrefix: true });
+  const { mno1, mno2, roomId } = qs.parse(search, { ignoreQueryPrefix: true });
 
   useEffect(() => {
-    dispatch(enterRoom({ mno1, mno2 }));
-  }, [mno1, mno2]);
+    dispatch(enterRoom({ mno1, mno2, roomId }));
+  }, [mno1, mno2, roomId]);
 
   const onChange = (e) => {
     const { value, name } = e.target;
@@ -49,40 +56,40 @@ const ChatContainer = () => {
   };
 
   useEffect(() => {
+    if (user && room) {
+      dispatch(roomList(user.no));
+    }
+  }, [room, user]);
+
+  const chatEvent = function (data) {
+    // 채팅
+    const newChat = data.chat;
+    dispatch(concatChats({ newChat }));
+    if (user.no !== newChat.user.mno) {
+      onTranslate(newChat);
+    }
+  };
+
+  const translateChatEvent = function (data) {
+    // 채팅
+    const translatedChatLog = data.translatedChatLog;
+    dispatch(translateChat({ translatedChatLog }));
+  };
+
+  useEffect(() => {
     if (room && !error) {
       if (!socket.connected) {
         socket.connect();
       }
 
       socket.emit('join', { roomId: room._id });
-      // socket.on('join', function (data) {
-      //   // 입장
-      //   const newChat = data.chat;
-      //   dispatch(concatChats({ newChat }));
-      // });
-      // socket.on('exit', function (data) {
-      //   // 퇴장
-      //   const newChat = data.chat;
-      //   dispatch(concatChats({ newChat }));
-      // });
-      socket.on('chat', function (data) {
-        // 채팅
-        const newChat = data.chat;
-        dispatch(concatChats({ newChat }));
-        if (user.no !== newChat.user.mno) {
-          onTranslate(newChat);
-        }
-      });
-
-      socket.on('translateChat', function (data) {
-        // 채팅
-        const translatedChatLog = data.translatedChatLog;
-        dispatch(translateChat({ translatedChatLog }));
-        console.log(translatedChatLog);
-      });
+      socket.on('chat', chatEvent);
+      socket.on('translateChat', translateChatEvent);
     }
 
     return () => {
+      socket.off('chat', chatEvent);
+      socket.off('translateChat', translateChatEvent);
       socket.disconnect();
     };
   }, [room]);
@@ -107,10 +114,16 @@ const ChatContainer = () => {
   const onTranslate = (chatLog) => {
     // console.log(chatLog);
     const req = {};
-    req.targetLanguage = targetLanguage;
+    req.targetLanguage = targetLanguageRef.current;
     req.chatLog = chatLog;
     if (socket) {
       socket.emit('translateChat', req);
+    }
+  };
+
+  const onTTS = ({ chatId, roomId, language, text }) => {
+    if (socket) {
+      socket.emit('tts', { chatId, roomId, language, text });
     }
   };
 
@@ -130,6 +143,7 @@ const ChatContainer = () => {
       onChange={onChange}
       onSendChat={onSendChat}
       onTranslate={onTranslate}
+      onTTS={onTTS}
       targetLanguage={targetLanguage}
       setTargetLanguage={setTargetLanguage}
       onLoadBeforeChats={onLoadBeforeChats}

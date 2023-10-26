@@ -9,7 +9,8 @@ import {
   addComment,
   deleteBoard,
   deleteComment,
-  update, deletePhoto
+  update,
+  deletePhoto,
 } from '../../modules/board';
 import { boardlike, boardunlike } from '../../modules/auth';
 
@@ -24,20 +25,20 @@ const BoardDetailContainer = () => {
     title: 'Loading...',
     content: 'Loading...',
     writer: {
-      nick: 'Loading...'
+      nick: 'Loading...',
     },
     attachedFiles: [],
     editable: false,
     viewCount: 0,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   const commentDefault = {
     content: 'Loading...',
     writer: {
-      nick: 'Loading...'
+      nick: 'Loading...',
     },
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   const {
@@ -46,14 +47,14 @@ const BoardDetailContainer = () => {
     boardError,
     user,
     likeBoardSet,
-    files
-  } = useSelector(state => ({
+    files,
+  } = useSelector((state) => ({
     board: state.board.board,
     comments: state.board.comments,
     boardError: state.board.boardError,
     user: state.auth.user,
     likeBoardSet: state.auth.likeBoardList,
-    files: state.board.attachedFiles
+    files: state.board.attachedFiles,
   }));
 
   const { boardNo, category } = useParams();
@@ -74,6 +75,10 @@ const BoardDetailContainer = () => {
     for (let i = 0; files[i] != null; i++) {
       updateData.append('files', files[i]);
     }
+
+    const selectedFileNames = Array.from(files).map((file) => file.name);
+    const fileSelectedElement = document.getElementById('fileSelected');
+    fileSelectedElement.textContent = `${selectedFileNames.join(', ')}`;
   };
 
   const onEdit = (e) => {
@@ -91,21 +96,21 @@ const BoardDetailContainer = () => {
             content: updatedContent,
             attachFiles: files,
             writer: user,
-          })
+          }),
         ],
         {
-          type: 'application/json'
+          type: 'application/json',
         }
       )
     );
     dispatch(update({ updateData }));
-    dispatch(detail({ category, boardNo }));  // 다시 상세 정보를 불러옴
+    dispatch(detail({ category, boardNo })); // 다시 상세 정보를 불러옴
   };
 
   //게시글초기화
   const onReset = () => {
-    dispatch(initializeForm());  // 상태를 초기화
-    dispatch(detail({ category, boardNo }));  // 다시 상세 정보를 불러옴
+    dispatch(initializeForm()); // 상태를 초기화
+    dispatch(detail({ category, boardNo })); // 다시 상세 정보를 불러옴
   };
 
   //게시글삭제
@@ -129,11 +134,11 @@ const BoardDetailContainer = () => {
     const commentData = {
       boardNo: parseInt(boardNo, 10),
       content,
-      writer: user
+      writer: user,
     };
     dispatch(addComment(commentData));
     dispatch(detail({ category, boardNo })); // 페이지 다시 불러서 새로고침 효과
-    setContent('');  // 입력 필드 초기화
+    setContent(''); // 입력 필드 초기화
   };
 
   //댓글삭제
@@ -146,7 +151,7 @@ const BoardDetailContainer = () => {
     setContent(e.target.value);
   };
 
-// 좋아요
+  // 좋아요
   const handleLike = (boardNo) => {
     dispatch(boardlike(boardNo));
   };

@@ -36,6 +36,10 @@ const BoardFormContainer = () => {
     for (let i = 0; files[i] != null; i++) {
       formData.append('files', files[i]);
     }
+
+    const selectedFileNames = Array.from(files).map((file) => file.name);
+    const fileSelectedElement = document.getElementById('fileSelected');
+    fileSelectedElement.textContent = `${selectedFileNames.join(', ')}`;
   };
 
   const onSubmit = (e) => {

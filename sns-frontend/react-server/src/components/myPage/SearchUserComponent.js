@@ -26,6 +26,9 @@ const DetailForm = styled.div`
     white-space: nowrap;
     text-decoration-line: none;
     margin: 20px 20px 20px 10px;
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   /* 팔로잉, 팔로워 리스트 관련 */
@@ -47,7 +50,7 @@ const DetailForm = styled.div`
 `;
 const StyledInput = styled.input`
   border: none;
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid #fafaf5;
   margin-bottom: 10px;
   border-radius: 3px;
   outline: none;
@@ -70,6 +73,9 @@ const SubmitButton = styled(Button)`
   background-color: #426b1f;
   cursor: pointer;
   outline: none;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const SearchUserComponent = ({ searchTxt, onSubmitSearch, onChange }) => {

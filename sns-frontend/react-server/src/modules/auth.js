@@ -36,6 +36,9 @@ const [FOLLOW, FOLLOW_SUCCESS, FOLLOW_FAILURE] =
 const [UNFOLLOW, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE] =
   createRequestActionTypes('myPage/UNFOLLOW');
 
+const [DELETE, DELETE_SUCCESS, DELETE_FAILURE] =
+  createRequestActionTypes('myPage/DELETE');
+
 const [BOARD_LIKE, BOARD_LIKE_SUCCESS, BOARD_LIKE_FAILURE] =
   createRequestActionTypes('board/LIKE');
 
@@ -58,9 +61,13 @@ export const initializeForm = createAction(INITIALIZE_FORM, () => {});
 export const register = createAction(REGISTER, ({ formData }) => ({
   formData,
 }));
-export const getAuthCode = createAction(GET_AUTH_CODE, ({ phoneNumber }) => ({
-  phoneNumber,
-}));
+export const getAuthCode = createAction(
+  GET_AUTH_CODE,
+  ({ phoneNumber, requestType }) => ({
+    phoneNumber,
+    requestType,
+  })
+);
 export const checkAuthCode = createAction(
   CHECK_AUTH_CODE,
   ({ phoneNumber, verificationCode }) => ({
@@ -92,6 +99,7 @@ export const follow = createAction(FOLLOW, (followingNo) => followingNo);
 export const unfollow = createAction(UNFOLLOW, (followingNo) => followingNo);
 export const boardlike = createAction(BOARD_LIKE, (boardNo) => boardNo);
 export const boardunlike = createAction(BOARD_UNLIKE, (boardNo) => boardNo);
+export const deleteMember = createAction(DELETE, (userNo) => userNo);
 
 export const guestBooklike = createAction(
   GUESTBOOK_LIKE,
@@ -120,6 +128,7 @@ const checkSaga = createRequestSaga(CHECK, authAPI.check);
 const logoutSaga = createRequestSaga(LOGOUT, authAPI.logout);
 const followSaga = createRequestSaga(FOLLOW, myPageAPI.follow);
 const unfollowSaga = createRequestSaga(UNFOLLOW, myPageAPI.unfollow);
+const deleteMemberSaga = createRequestSaga(DELETE, myPageAPI.deleteMember);
 const boardlikeSaga = createRequestSaga(BOARD_LIKE, boardAPI.like);
 const boardunlikeSaga = createRequestSaga(BOARD_UNLIKE, boardAPI.unlike);
 const guestBooklikeSaga = createRequestSaga(GUESTBOOK_LIKE, guestBookAPI.like);
@@ -142,6 +151,7 @@ export function* authSaga() {
   yield takeLatest(BOARD_UNLIKE, boardunlikeSaga);
   yield takeLatest(GUESTBOOK_LIKE, guestBooklikeSaga);
   yield takeLatest(GUESTBOOK_UNLIKE, guestBookunlikeSaga);
+  yield takeLatest(DELETE, deleteMemberSaga);
 }
 
 const initialState = {
@@ -193,7 +203,6 @@ const auth = handleActions(
     [REGISTER_SUCCESS]: (state, { payload: user }) => ({
       ...state,
       authError: null,
-      user,
     }),
     [REGISTER_FAILURE]: (state, { payload: error }) => ({
       ...state,
@@ -235,9 +244,9 @@ const auth = handleActions(
       ...state,
       authError: null,
       user,
-      followList: user ? [] : user.followMemberSet,
-      likeBoardList: user ? [] : user.likeBoardSet,
-      likeGuestBookList: user ? [] : user.likeGuestBookSet,
+      followList: user ? user.followMemberSet : [],
+      likeBoardList: user ? user.likeBoardSet : [],
+      likeGuestBookList: user ? user.likeGuestBookSet : [],
       authMessage:
         response.status == 200
           ? null
@@ -262,7 +271,13 @@ const auth = handleActions(
       authError: error,
     }),
 
-    [LOGOUT]: (state) => ({
+    [LOGOUT_SUCCESS]: (state) => ({
+      ...state,
+      user: null,
+      authMessage: 'logoutSuccess',
+    }),
+
+    [DELETE]: (state) => ({
       ...state,
       user: null,
     }),

@@ -37,7 +37,7 @@ const PwFindContainer = () => {
 
   const onAuthPhoneNumber = (e) => {
     e.preventDefault();
-    dispatch(getAuthCode({ phoneNumber }));
+    dispatch(getAuthCode({ phoneNumber, requestType: 'findPassword' }));
   };
 
   const onCheckPhoneNumber = (e) => {

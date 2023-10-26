@@ -177,11 +177,11 @@ public class BoardController {
       totalRecords = boardService.getSearchBoardsCount(keyword);
     }
 
-    int maxPage = (totalRecords + (pageSize - 1)) / pageSize;
+    int lastPage = (totalRecords + (pageSize - 1)) / pageSize;
 
     Map<String, Object> resultMap = new HashMap<>();
     resultMap.put("boardList", boardList);
-    resultMap.put("maxPage", maxPage);
+    resultMap.put("lastPage", lastPage);
     resultMap.put("currentPage", page);
     resultMap.put("pageSize", pageSize);
     resultMap.put("totalRecords", totalRecords);
@@ -410,7 +410,7 @@ public class BoardController {
       @RequestParam int category,
       @RequestParam(name = "searchTxt") String keyword,
       @RequestParam(defaultValue = "1") int page,
-      @RequestParam(defaultValue = "6") int pageSize) {
+      @RequestParam(defaultValue = "5") int pageSize) {
     List<Board> resultList;
 //    String encodedKeyword = URLEncoder.encode(keyword, StandardCharsets.UTF_8);
     try {

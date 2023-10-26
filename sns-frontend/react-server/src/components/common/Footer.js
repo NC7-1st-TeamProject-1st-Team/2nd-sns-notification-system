@@ -50,8 +50,8 @@ const healingPhrases = [
   "모든날 모든 순간을 응원해요",
   "비온 뒤 맑은날이 오는것처럼",
 
-
-
+    
+    
 ];
 
 function getRandomHealingPhrase() {

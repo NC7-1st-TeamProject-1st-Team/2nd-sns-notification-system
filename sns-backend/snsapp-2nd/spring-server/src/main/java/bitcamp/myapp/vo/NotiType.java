@@ -9,6 +9,7 @@ public class NotiType implements Serializable {
   public static int FOLLOW_TYPE = 1;
   public static int LIKE_TYPE = 2;
   public static int COMMENT_TYPE = 3;
+  public static int CHAT_TYPE = 4; // node server 에서 사용 중
   private int no;
   private String name;
 

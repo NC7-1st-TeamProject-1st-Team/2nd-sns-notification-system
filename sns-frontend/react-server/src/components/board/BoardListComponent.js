@@ -20,8 +20,9 @@ const Button = styled.button`
   border-radius: 4px;
   margin-right: ${(props) =>
     props.main ? '300px' : props.write ? '10px' : '0'};
+  cursor: pointer;
   &:hover {
-    background-color: #426b1f;
+    background-color: #5d962c;
   }
 `;
 

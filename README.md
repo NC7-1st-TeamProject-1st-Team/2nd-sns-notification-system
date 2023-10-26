@@ -1,4 +1,4 @@
-# 1조 snsapp 요구 명세서
+# 1조 힐링캠프조 ( snsapp )
 
 >- 목차
 >1. 프로젝트 목적
@@ -64,21 +64,18 @@
 
 
 ## 4.유스케이스 모델링
-![img.png](image/Usecase.png)
+![img.png](./docs/image/2nd_usecase.png)
 
 ## 5. ERD
-![img_1.png](image/ERD.png)
+![img_1.png](./docs/image/ERD.png)
 
 ## 6. UI
-![img_1.png](image/UI1.png)
-![img_1.png](image/UI.png)
-![img_1.png](image/UI2.png)
-![img_1.png](image/UI3.png)
+![img_1.png](./docs/image/UI1.png)
+![img_1.png](./docs/image/UI.png)
+![img_1.png](./docs/image/UI2.png)
+![img_1.png](./docs/image/UI3.png)
       + 채팅 화면
 
  ### 7.아키택처
-- API
-  ![img.png](image/ar2.png)
-
-- Cloud
-  ![img.png](image/ar1.JPG)
+- API & Cloud
+  ![img.png](./docs/image/2ndar231018.png)

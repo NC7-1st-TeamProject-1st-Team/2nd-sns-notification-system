@@ -2,6 +2,10 @@ import styled from 'styled-components';
 import Responsive from './Responsive';
 import Button from './Button';
 import { Link } from 'react-router-dom';
+import Modal from '../common/Modal';
+import React, { useState } from 'react';
+import NotificationListModalContainer from '../../containers/notification/NotificationListModalContainer';
+
 
 const HeaderBlock = styled.div`
   position: fixed;
@@ -83,14 +87,26 @@ const HeaderProfile = styled.div`
 `;
 
 const HeaderNotificationIcon = styled.img`
-  height: 20px;
+  height: 25px;
+  cursor: pointer;
 `;
+
 const HeaderUserIcon = styled.img`
   height: 30px;
   border-radius: 50%;
 `;
 
 const Header = ({ user, myPage, notReadNotiCount, onLogout }) => {
+  const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+
+  const toggleNotificationModal = () => {
+    setIsNotificationModalOpen(!isNotificationModalOpen);
+  };
+
+  const handleNotificationClick = () => {
+    setIsNotificationModalOpen((prevState) => !prevState); // 모달 열기/닫기 토글
+  };
+
   // user = { no: 1, nick: '임시 닉네임', photo: '주소' };
   if (user == null) {
     return <Link to="/auth/login">로그인이 필요합니다</Link>;
@@ -100,52 +116,54 @@ const Header = ({ user, myPage, notReadNotiCount, onLogout }) => {
   const profileUrl = `http://gjoxpfbmymto19010706.cdn.ntruss.com/sns_member/${user.photo}?type=f&w=270&h=270&faceopt=true&ttype=jpg`;
 
   return (
-    <>
-      <HeaderBlock>
-        <Wrapper>
-          <Link to={`/myPage/${user.no}`}>
-            <img
-              src={process.env.PUBLIC_URL + '/images/logo.png'}
-              alt="로고"
-              class="logo"
-            />
-          </Link>
-          <HeaderNav>
-            <Link to={`/myPage/${user.no}`}>마이페이지</Link>
-            <Link to="/board/list?category=1">게시글</Link>
-            {myPage != null ? (
-              <Link to={`/guestBook/${myPage.no}`}>방명록</Link>
-            ) : (
-              <Link to={`/guestBook/${user.no}`}>방명록</Link>
-            )}
-          </HeaderNav>
-          <HeaderProfile>
-            <Link to="/notification/list">
-              <span id="notReadNotiCount">{notReadNotiCount}</span>
-              <HeaderNotificationIcon
-                src={process.env.PUBLIC_URL + '/images/noti.png'}
-                alt="알림"
+      <>
+        <HeaderBlock>
+          <Wrapper>
+            <Link to={`/myPage/${user.no}`}>
+              <img
+                  src={process.env.PUBLIC_URL + '/images/logo.png'}
+                  alt="로고"
+                  className="logo"
               />
             </Link>
-            {user.photo != null ? (
-              <Link to={profileUrl}>
-                <HeaderUserIcon src={profileUrl} />
-              </Link>
-            ) : (
-              <HeaderUserIcon
-                src={process.env.PUBLIC_URL + '/images/default.jpg'}
+            <HeaderNav>
+              <Link to={`/myPage/${user.no}`}>마이페이지</Link>
+              <Link to="/board/list?category=1">게시글</Link>
+              {myPage != null ? (
+                  <Link to={`/guestBook/${myPage.no}`}>방명록</Link>
+              ) : (
+                  <Link to={`/guestBook/${user.no}`}>방명록</Link>
+              )}
+            </HeaderNav>
+            <HeaderProfile>
+              <span id="notReadNotiCount">{notReadNotiCount}</span>
+              <HeaderNotificationIcon
+                  src={process.env.PUBLIC_URL + '/images/noti.png'}
+                  alt="알림"
+                  onClick={handleNotificationClick} //알림모달
               />
-            )}
-
-            <span class="headerUserNick">{user.nick}</span>
-            <div class="logout">
-              <Link onClick={onLogout}>로그아웃</Link>
-            </div>
-          </HeaderProfile>
-        </Wrapper>
-      </HeaderBlock>
-      <Spacer />
-    </>
+              {user.photo != null ? (
+                  <Link to={profileUrl}>
+                    <HeaderUserIcon src={profileUrl} />
+                  </Link>
+              ) : (
+                  <HeaderUserIcon
+                      src={process.env.PUBLIC_URL + '/images/default.jpg'}
+                  />
+              )}
+              <span className="headerUserNick">{user.nick}</span>
+              <div className="logout">
+                <Link onClick={onLogout}>로그아웃</Link>
+              </div>
+            </HeaderProfile>
+          </Wrapper>
+        </HeaderBlock>
+        <Spacer />
+        {/* 알림 모달 */}
+        {isNotificationModalOpen && (
+            <NotificationListModalContainer onClose={toggleNotificationModal} />
+        )}
+      </>
   );
 };
 

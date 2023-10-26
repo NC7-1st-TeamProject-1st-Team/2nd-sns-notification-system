@@ -29,7 +29,7 @@ const TableCell = styled.td`
 const TableHeaderCell = styled.th`
   padding: 10px;
   text-align: center;
-  background-color: #f2f2f2;
+  background-color: #fafaf5;
   //border: 1px solid #ddd;
   width: 200px;
 `;
@@ -40,18 +40,12 @@ const ProfileAuthor = styled.div`
   justify-content: center;
 `;
 
-const ProfilePicture = styled.div`
+const ProfilePictureImg = styled.img`
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin-right: 0px;
-`;
-
-const ProfilePictureImg = styled.img`
-  width: 100%;
-  height: auto;
+  object-fit: cover;  // 이미지를 컨테이너에 맞게 조절
   margin-right: 8px;
+  border-radius: 50%;
 `;
 
 const TitleTableCell = styled(TableHeaderCell)`
@@ -88,13 +82,13 @@ const CommentTableCell = styled.td`
 const CommentTableHeaderCell = styled.th`
   padding: 10px;
   text-align: center;
-  background-color: #f2f2f2;
+  background-color: #fafaf5;
   width: 200px;
 `;
 
 const CommentTitleHeaderCell = styled.th`
   width: 800px;
-  background-color: #f2f2f2;
+  background-color: #fafaf5;
 `;
 
 const ToggleButton = styled.button`
@@ -103,12 +97,17 @@ const ToggleButton = styled.button`
   border: none; /* 테두리 제거 */
 `;
 
+const BoardListBox = styled.div`
+  margin-top:-300px;
+`;
+
+
 const PageDetailComponent = ({ myBoardList, myCommentList, show }) => {
   const location = useLocation();
   const { userNo } = useParams(); // URL 파라미터에서 userNo를 추출
   const queryParams = new URLSearchParams(location.search);
-  const [isBoardListOpen, setIsBoardListOpen] = useState(false);
-  const [isCommentListOpen, setIsCommentListOpen] = useState(false);
+  const [isBoardListOpen, setIsBoardListOpen] = useState(true);
+  const [isCommentListOpen, setIsCommentListOpen] = useState(true);
 
   // URL이 /myPage/ 일때만 게시글과 댓글 섹션을 렌더링
   const shouldRenderSections = show === 'boardList';
@@ -131,7 +130,7 @@ const PageDetailComponent = ({ myBoardList, myCommentList, show }) => {
       <>
         <MyPageTemplate>
           {shouldRenderSections && (
-              <div className="boardListBox" data-th-unless="">
+              <BoardListBox>
                 <div>
                   <h2>
                     🌱 내가 쓴 게시글
@@ -157,16 +156,14 @@ const PageDetailComponent = ({ myBoardList, myCommentList, show }) => {
                             <TableRow key={board.id}>
                               <TableCell>
                                 <ProfileAuthor>
-                                  <ProfilePicture>
-                                    <img
-                                        src={
-                                          board.writer.photo
-                                              ? `http://gjoxpfbmymto19010706.cdn.ntruss.com/sns_member/${board.writer.photo}?type=f&w=270&h=270&faceopt=true&ttype=jpg`
-                                              : '/images/avatar.png'
-                                        }
-                                        alt="profile"
-                                    />
-                                  </ProfilePicture>
+                                  <ProfilePictureImg
+                                      src={
+                                        board.writer.photo
+                                            ? `http://gjoxpfbmymto19010706.cdn.ntruss.com/sns_member/${board.writer.photo}?type=f&w=270&h=270&faceopt=true&ttype=jpg`
+                                            : '/images/avatar.png'
+                                      }
+                                      alt="profile"
+                                  />
                                   <span>{board.writer.nick}</span>
                                 </ProfileAuthor>
                               </TableCell>
@@ -206,8 +203,7 @@ const PageDetailComponent = ({ myBoardList, myCommentList, show }) => {
                             <CommentTableRow key={boardComment.id}>
                               <CommentTableCell>
                                 <ProfileAuthor>
-                                  <ProfilePicture>
-                                    <img
+                                    <ProfilePictureImg
                                         src={
                                           boardComment.writer.photo
                                               ? `http://gjoxpfbmymto19010706.cdn.ntruss.com/sns_member/${boardComment.writer.photo}?type=f&w=270&h=270&faceopt=true&ttype=jpg`
@@ -215,7 +211,6 @@ const PageDetailComponent = ({ myBoardList, myCommentList, show }) => {
                                         }
                                         alt="profile"
                                     />
-                                  </ProfilePicture>
                                   <span>{boardComment.writer.nick}</span>
                                 </ProfileAuthor>
                               </CommentTableCell>
@@ -232,7 +227,7 @@ const PageDetailComponent = ({ myBoardList, myCommentList, show }) => {
                   </tbody>
                 </CommentListTable>
                 )}
-              </div>
+              </BoardListBox>
           )}
         </MyPageTemplate>
       </>

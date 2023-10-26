@@ -9,47 +9,63 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   // 기타 설정...
 });
+
+export const newNoti = async ({
+  memberNo,
+  notiTypeNo,
+  content,
+  url,
+  notiState,
+}) => {
+  const fcmToken = await redisClient.get('FcmToken:' + memberNo);
+  const notiLog = await Noti.create({
+    mno: memberNo,
+    ntno: notiTypeNo,
+    content,
+    url,
+    noti_state: notiState,
+  });
+
+  let title = '';
+  switch (notiTypeNo) {
+    case 1:
+      title = 'follow';
+      break;
+    case 2:
+      title = 'like';
+      break;
+    case 3:
+      title = 'comment';
+      break;
+    case 4:
+      title = 'chat';
+      break;
+  }
+
+  // Firebase 알림 메시지 전송
+  if (fcmToken) {
+    const message = {
+      notification: {
+        title: title,
+        body: content,
+      },
+      token: fcmToken,
+      data: {
+        url,
+      },
+    };
+
+    const response = await admin.messaging().send(message);
+    console.log('Successfully sent following notification:', response);
+  } else {
+    console.error('User not found for the specified memberNo.');
+  }
+  return notiLog;
+};
+
 export const addLog = async (req, res, next) => {
-  const admin = require('firebase-admin');
   try {
-    const fcmToken = await redisClient.get('FcmToken:' + req.body.memberNo);
-    const notiLog = await Noti.create({
-      mno: req.body.memberNo,
-      ntno: req.body.notiTypeNo,
-      content: req.body.content,
-      url: req.body.url,
-      noti_state: req.body.notiState,
-    });
-
-    let title = '';
-    switch (req.body.notiTypeNo) {
-      case 1:
-        title = 'follow';
-        break;
-      case 2:
-        title = 'like';
-        break;
-      case 3:
-        title = 'comment';
-        break;
-    }
-
-    // Firebase 알림 메시지 전송
-    if (fcmToken) {
-      const message = {
-        data: {
-          title: title,
-          body: req.body.content,
-        },
-        token: fcmToken,
-      };
-
-      const response = await admin.messaging().send(message);
-      console.log('Successfully sent following notification:', response);
-    } else {
-      console.error('User not found for the specified memberNo.');
-    }
-
+    const notiLog = newNoti(req.body);
     return res.json(notiLog);
   } catch (err) {
     console.error(err);

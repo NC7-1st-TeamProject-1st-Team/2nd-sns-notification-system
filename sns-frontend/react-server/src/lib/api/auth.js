@@ -13,9 +13,10 @@ export const register = ({ formData }) =>
       'Content-Type': 'multipart/form-data',
     },
   });
-export const getPhoneAuthCode = ({ phoneNumber }) =>
+export const getPhoneAuthCode = ({ phoneNumber, requestType }) =>
   springClient.post('auth/getPhoneAuthCode', {
     phoneNumber,
+    requestType,
   });
 
 export const checkPhoneAuthCode = ({ phoneNumber, verificationCode }) =>

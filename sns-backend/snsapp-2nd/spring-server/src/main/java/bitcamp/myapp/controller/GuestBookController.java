@@ -103,13 +103,13 @@ public class GuestBookController {
     guestBookList = guestBookService.list(no, pageSize, page);
     totalRecords = guestBookService.getTotalCount(no);
 
-    int maxPage = (totalRecords + (pageSize - 1)) / pageSize;
+    int lastPage = (totalRecords + (pageSize - 1)) / pageSize;
 
     String guestBookOwnerNick = guestBookService.getMemberNickByNo(no);
 
     Map<String, Object> resultMap = new HashMap<>();
     resultMap.put("guestBookList", guestBookList);
-    resultMap.put("maxPage", maxPage);
+    resultMap.put("lastPage", lastPage);
     resultMap.put("currentPage", page);
     resultMap.put("pageSize", pageSize);
     resultMap.put("totalRecords", totalRecords);

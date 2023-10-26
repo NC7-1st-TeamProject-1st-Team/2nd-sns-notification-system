@@ -56,6 +56,12 @@ public class AuthController {
     System.out.println("AuthController 생성됨!");
   }
 
+  @GetMapping("test")
+  public ResponseEntity test() {
+    System.out.println("get 요청 수신@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    return new ResponseEntity<>("통신 성공!", HttpStatus.OK);
+  }
+
   @GetMapping("form")
   public void form(
       @CookieValue(required = false) String phoneNumber,
@@ -96,6 +102,8 @@ public class AuthController {
         Cookie cookie = new Cookie("sessionId", sessionId);
         cookie.setPath("/");
 //        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+        cookie.setDomain("bitsns.site");
         response.addCookie(cookie);
         redisService.getValueOps()
             .set(sessionId, Integer.toString(loginUser.getNo()), 1, TimeUnit.DAYS);
@@ -196,6 +204,8 @@ public class AuthController {
     cookie.setPath("/");
     cookie.setMaxAge(1000);
     response.addCookie(cookie);
+    cookie.setDomain("bitsns.site");
+    response.addCookie(cookie);
 
     return null;
   }
@@ -227,14 +237,6 @@ public class AuthController {
       MyPage myPage = new MyPage(member);
       myPageService.add(myPage);
 
-      String sessionId = UUID.randomUUID().toString();
-      Cookie cookie = new Cookie("sessionId", sessionId);
-      cookie.setPath("/");
-      cookie.setHttpOnly(true);
-      response.addCookie(cookie);
-      redisService.getValueOps()
-          .set(sessionId, Integer.toString(member.getNo()), 1, TimeUnit.DAYS);
-
       return new ResponseEntity<>(member, HttpStatus.OK);
 
     } catch (Exception e) {
@@ -255,8 +257,12 @@ public class AuthController {
     String phoneNumber = bodyMap.get("phoneNumber");
     phoneNumber = phoneNumber.replaceAll("\\D+", "");
     try { // 이미 가입된 전화번호가 있으면
-      if (smsService.memberTelCount(phoneNumber) > 0) {
+      if (bodyMap.get("requestType").equals("resist")
+          && smsService.memberTelCount(phoneNumber) > 0) {
         return new ResponseEntity<>("이미 가입된 회원입니다", HttpStatus.OK);
+      } else if (bodyMap.get("requestType").equals("findPassword")
+          && smsService.memberTelCount(phoneNumber) == 0) {
+        return new ResponseEntity<>("가입되지 않은 회원입니다", HttpStatus.OK);
       } else {
         String code = smsService.sendRandomMessage(phoneNumber);
         redisService.getValueOps()

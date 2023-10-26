@@ -48,7 +48,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(COOKIE_SECRET));
 
 app.use('/node', api);
-
+app.use('/clova', express.static(path.join(__dirname, '../clova')));
 app.use('*', function (req, res) {
   res.sendFile(path.resolve(__dirname, BUILD_DIRECTORY + '/index.html'));
 });

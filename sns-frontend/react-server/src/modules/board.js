@@ -8,8 +8,6 @@ import * as boardAPI from '../lib/api/board';
 const CHANGE_FIELD = 'board/CHANGE_FIELD';
 const INITIALIZE_FORM = 'board/INITIALIZE_FORM';
 
-
-
 // --------------- Action Type ------------------- //
 
 //게시글
@@ -25,21 +23,22 @@ const [FORM, FORM_SUCCESS, FORM_FAILURE] =
 const [UPDATE, UPDATE_SUCCESS, UPDATE_FAILURE] =
   createRequestActionTypes('board/UPDATE');
 
-const [DELETE, DELETE_SUCCESS, DELETE_FAILURE] = createRequestActionTypes('board/DELETE');
+const [DELETE, DELETE_SUCCESS, DELETE_FAILURE] =
+  createRequestActionTypes('board/DELETE');
 
 // 사진 삭제
-const [DELETE_PHOTO, DELETE_PHOTO_SUCCESS, DELETE_PHOTO_FAILURE]
-  = createRequestActionTypes('board/DELETE_PHOTO');
+const [DELETE_PHOTO, DELETE_PHOTO_SUCCESS, DELETE_PHOTO_FAILURE] =
+  createRequestActionTypes('board/DELETE_PHOTO');
 
 //댓글
 const [ADD_COMMENT, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE] =
-    createRequestActionTypes('comment/ADD_COMMENT');
+  createRequestActionTypes('comment/ADD_COMMENT');
 const [DELETE_COMMENT, DELETE_COMMENT_SUCCESS, DELETE_COMMENT_FAILURE] =
-    createRequestActionTypes('comment/DELETE_COMMENT');
+  createRequestActionTypes('comment/DELETE_COMMENT');
 
 //검색
 const [SEARCH_BOARDS, SEARCH_BOARDS_SUCCESS, SEARCH_BOARDS_FAILURE] =
-    createRequestActionTypes('board/SEARCH_BOARDS');
+  createRequestActionTypes('board/SEARCH_BOARDS');
 
 // --------------- createAction ------------------- //
 
@@ -51,7 +50,7 @@ export const changeField = createAction(CHANGE_FIELD, ({ key, value }) => ({
 export const initializeForm = createAction(INITIALIZE_FORM, () => {});
 
 //게시글
-export const list = createAction(LIST, ({ category , limit, page }) => ({
+export const list = createAction(LIST, ({ category, limit, page }) => ({
   category,
   limit,
   page,
@@ -64,26 +63,40 @@ export const detail = createAction(DETAIL, ({ category, boardNo }) => ({
 
 export const form = createAction(FORM, ({ formData }) => ({ formData }));
 
-export const update = createAction(UPDATE, ({ updateData }) => ({ updateData }));
+export const update = createAction(UPDATE, ({ updateData }) => ({
+  updateData,
+}));
 
-export const deleteBoard = createAction(DELETE, ({boardNo, category}) => ({
-  boardNo, category
+export const deleteBoard = createAction(DELETE, ({ boardNo, category }) => ({
+  boardNo,
+  category,
 }));
 
 // 사진 삭제
-export const deletePhoto = createAction(DELETE_PHOTO, ({ fileNo }) => ({ fileNo }));
+export const deletePhoto = createAction(DELETE_PHOTO, ({ fileNo }) => ({
+  fileNo,
+}));
 
 //댓글
-export const addComment = createAction(ADD_COMMENT, ({ content, boardNo, writer }) => ({ content, boardNo, writer }));
-export const deleteComment = createAction(DELETE_COMMENT, ({ commentNo, boardNo }) => ({ commentNo, boardNo }));
+export const addComment = createAction(
+  ADD_COMMENT,
+  ({ content, boardNo, writer }) => ({ content, boardNo, writer })
+);
+export const deleteComment = createAction(
+  DELETE_COMMENT,
+  ({ commentNo, boardNo }) => ({ commentNo, boardNo })
+);
 
 //검색
-export const searchBoards = createAction(SEARCH_BOARDS, ({ category, searchTxt, pageSize, page }) => ({
-  category,
-  searchTxt,
-  pageSize,
-  page
-}));
+export const searchBoards = createAction(
+  SEARCH_BOARDS,
+  ({ category, searchTxt, pageSize, page }) => ({
+    category,
+    searchTxt,
+    pageSize,
+    page,
+  })
+);
 
 // --------------- Saga ------------------- //
 
@@ -92,19 +105,22 @@ const listSaga = createRequestSaga(LIST, boardAPI.list);
 const detailSaga = createRequestSaga(DETAIL, boardAPI.detail);
 const formSaga = createRequestSaga(FORM, boardAPI.form);
 const updateSaga = createRequestSaga(UPDATE, boardAPI.update);
-const deleteBoardSaga  = createRequestSaga(DELETE, boardAPI.deleteBoard);
+const deleteBoardSaga = createRequestSaga(DELETE, boardAPI.deleteBoard);
 
 // 사진 삭제
 const deletePhotoSaga = createRequestSaga(DELETE_PHOTO, boardAPI.deletePhoto);
 
 //댓글
 const addCommentSaga = createRequestSaga(ADD_COMMENT, boardAPI.addComment);
-const deleteCommentSaga = createRequestSaga(DELETE_COMMENT, boardAPI.deleteComment);
+const deleteCommentSaga = createRequestSaga(
+  DELETE_COMMENT,
+  boardAPI.deleteComment
+);
 
 //검색
 const searchBoardsSaga = createRequestSaga(
-    SEARCH_BOARDS,
-    boardAPI.searchBoards
+  SEARCH_BOARDS,
+  boardAPI.searchBoards
 );
 
 export function* boardSaga() {
@@ -115,7 +131,7 @@ export function* boardSaga() {
   yield takeLatest(UPDATE, updateSaga);
   yield takeLatest(DELETE, deleteBoardSaga);
   yield takeLatest(DELETE_PHOTO, deletePhotoSaga);
-  
+
   //댓글
   yield takeLatest(ADD_COMMENT, addCommentSaga);
   yield takeLatest(DELETE_COMMENT, deleteCommentSaga);
@@ -128,7 +144,7 @@ const initialState = {
   boardList: [],
   category: 1,
   lastPage: 1,
-  board: {},
+  board: null,
   comments: null,
   boardError: null, // 에러 상태
   boardComment: null,
@@ -209,7 +225,7 @@ const board = handleActions(
     }),
 
     //댓글
-    [ADD_COMMENT_SUCCESS]: (state, { payload: boardComment}) => ({
+    [ADD_COMMENT_SUCCESS]: (state, { payload: boardComment }) => ({
       ...state,
       commentError: null,
       boardComment,

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const BoardFormContainer = styled.div`
   padding: 20px;
-  background-color: #f2f2f2;
+  background-color: #fafaf5;
   width: 700px;
   margin: auto;
 `;
@@ -13,7 +13,7 @@ const TitleStyle = styled.h1`
 `;
 
 const StyledForm = styled.form`
-  text-align: center;
+  // text-align: center;
 `;
 
 const StyledInput = styled.input`
@@ -28,17 +28,48 @@ const StyledInput = styled.input`
   &[name='title'] {
     font-size: 25px;
   }
+`;
 
-  &[type='file']::-webkit-file-upload-button {
-    width: 89px;
-    height: 36px;
-    background: #d9d9d9;
-    border: none;
-    border-radius: 4px;
-    color: #000;
-    font-weight: bold;
-    cursor: pointer;
+const FileInputWrapper = styled.div`
+  position: relative;
+  font-size: 12px;
+  margin-left: 30px;
+  margin-top: 20px;
+`;
+
+const FileInputLabel = styled.label`
+  background-color: #d3d3d3;
+  color: light-gray;
+  padding: 8px 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.65rem;
+  margin-left: 0px;
+  margin-right: 5px;
+  &:hover {
+    background-color: #426b1f;
+    color: white;
   }
+`;
+
+const FileInput = styled.input`
+  display: none;
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  // width: 100%;
+  // height: 100%;
+  // opacity: 0;
+  // cursor: pointer;
+
+  box-sizing: border-box;
+  width: 641px;
+  height: 42px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.17);
+  // margin: 10px auto;
+  // display: block;
 `;
 
 const StyledTextarea = styled.textarea`
@@ -95,14 +126,29 @@ const BoardFormComponent = ({
           value={content || ''} // 예외 처리 추가
           onChange={onChange}
         />
-        <StyledInput
+        {/* <StyledInput
           type="file"
           name="files"
           multiple
           placeholder="파일을 선택하세요"
           value={files || ''} // 예외 처리 추가
           onChange={onChangeFile}
-        />
+        /> */}
+        <FileInputWrapper>
+          <FileInputLabel>
+            파일 선택
+            <FileInput
+              type="file"
+              name="files"
+              multiple
+              value={files || ''} // 예외 처리 추가
+              onChange={onChangeFile}
+            />
+          </FileInputLabel>
+          <span id="fileSelected">
+            <span id="fileLabelText">파일 선택해주세요</span>
+          </span>
+        </FileInputWrapper>
         <StyledButton type="submit" onClick={onSubmit}>
           등록
         </StyledButton>

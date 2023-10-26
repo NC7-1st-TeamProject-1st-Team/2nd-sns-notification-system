@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import palette from '../../lib/styles/palette';
 import Button from '../common/Button';
 import AuthTemplate from './AuthTemplate';
+import React from "react";
 
 const RegisterForm = styled.div`
   width: 70%;
@@ -28,6 +29,47 @@ const StyledInput = styled.input`
   ::placeholder {
     color: #3a3a3a;
   }
+`;
+const PhoneNumberInput = styled.input`
+  width: 50%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 16px;
+  margin-left: 5px;
+
+  ::placeholder {
+    color: #3a3a3a;
+  }
+`;
+
+const VerificationCodeInput = styled.input`
+  width: 50%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 16px;
+  margin-left: 5px;
+
+  ::placeholder {
+    color: #3a3a3a;
+  }
+`;
+
+const PhoneNumberInputWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+`;
+
+const VerificationCodeInputWrapper = styled.div`
+  display: left;
+  flex-direction: row;
+  width: 100%;
+  align-items: left;
 `;
 
 const InputBlock = styled.div`
@@ -63,18 +105,30 @@ const SubmitButton = styled(Button)`
   border-radius: 4px;
   cursor: pointer;
   font-size: 25px;
+  font-weight: normal;
+
+  &:hover {
+    background-color: #5d962c; 
+  }
 `;
 
 const CodeButton = styled(Button)`
-  padding: 5px 10px;
+  padding: 10px 10px;
   background-color: #426b1f;
-  color: white;
-  border: none;
   border-radius: 4px;
   cursor: pointer;
   margin-left: 10px;
   width: 150px;
-  font-size: 20px;
+
+  &:hover {
+    background-color: #5d962c;
+  }
+`;
+
+const CodeButtonText = styled.span`
+  font-size: 16px;
+  font-weight: normal;
+  color: white;
 `;
 
 const PhoneNumberWrapper = styled.div`
@@ -97,7 +151,7 @@ const ButtonFlexWrapper = styled.div`
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 95%;
 `;
 
 const HorizontalWrapper = styled.div`
@@ -121,6 +175,50 @@ const StyledInput2 = styled.input`
     color: #3a3a3a;
   }
 `;
+
+const FileInputWrapper = styled.div`
+  position: relative;
+  font-size: 12px;
+
+  flex: 1;
+  padding: 13px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 79%;
+  margin-right: 5px;
+  margin-left:7px;
+
+  font-size: 12px;
+`;
+
+const FileInput = styled.input`
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+`;
+
+
+const FileInputLabel = styled.label`
+  background-color: #d3d3d3;
+  color: light-gray;
+  padding: 8px 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.65rem;
+  margin-left: 0px;
+
+  &:hover {
+    background-color: #426b1f;
+    color: white;
+  }
+`;
+
 const RegisterComponent = ({
   name,
   nick,
@@ -169,8 +267,8 @@ const RegisterComponent = ({
           <Label>🌱 전화번호</Label>
           <PhoneNumberWrapper>
             <Wrapper>
-              <HorizontalWrapper>
-                <StyledInput
+              <PhoneNumberInputWrapper>
+                <PhoneNumberInput
                   width="200px"
                   type="text"
                   name="phoneNumber"
@@ -179,12 +277,13 @@ const RegisterComponent = ({
                   onChange={onChange}
                 />
                 <CodeButton type="sendCode" onClick={onAuthPhoneNumber}>
-                  인증번호전송
+                  <CodeButtonText>인증번호전송</CodeButtonText>
                 </CodeButton>
-              </HorizontalWrapper>
 
-              <HorizontalWrapper>
-                <StyledInput
+              </PhoneNumberInputWrapper>
+
+              <VerificationCodeInputWrapper>
+                <VerificationCodeInput
                   width="200px"
                   type="text"
                   name="verificationCode"
@@ -193,9 +292,9 @@ const RegisterComponent = ({
                   onChange={onChange}
                 />
                 <CodeButton type="verifyCode" onClick={onCheckPhoneNumber}>
-                  인증번호확인
+                  <CodeButtonText>인증번호확인</CodeButtonText>
                 </CodeButton>
-              </HorizontalWrapper>
+              </VerificationCodeInputWrapper>
             </Wrapper>
           </PhoneNumberWrapper>
         </InputBlock>
@@ -214,7 +313,13 @@ const RegisterComponent = ({
         <InputBlock>
           <Label>🌱 프로필사진</Label>
           <InputWrapper>
-            <StyledInput type="file" name="photo" onChange={onChangeFile} />
+            <FileInputWrapper>
+              <FileInputLabel>
+                파일선택
+                <FileInput type="file" name="photo" onChange={onChangeFile} />
+              </FileInputLabel>
+              &nbsp;&nbsp;파일을 선택해 주세요
+            </FileInputWrapper>
           </InputWrapper>
         </InputBlock>
         {verificationState ? (

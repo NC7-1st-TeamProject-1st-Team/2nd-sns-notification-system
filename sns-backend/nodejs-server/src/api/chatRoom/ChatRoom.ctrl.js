@@ -2,6 +2,8 @@ import { redisClient } from '../../redis';
 import Chat from '../../schemas/chat';
 import Room from '../../schemas/room';
 import User from '../../schemas/user';
+import { addLog, newNoti } from '../notification/notification.ctrl';
+import mongoose from 'mongoose';
 
 export const roomList = async (req, res, next) => {
   try {
@@ -16,6 +18,7 @@ export const roomList = async (req, res, next) => {
 
     res.json(findRooms);
   } catch (error) {
+    res.status(500).end();
     console.error(error);
     next(error);
   }
@@ -33,18 +36,32 @@ export const enterRoom = async (req, res, next) => {
       return;
     }
 
-    let room = await Room.findOne({
-      users: { $all: [user1._id, user2._id] },
-    }).populate('users');
+    let room = null;
+
+    if (req.query.roomId) {
+      room = await Room.findOne({ _id: req.query.roomId }).populate('users');
+    } else {
+      room = await Room.findOne({
+        users: { $all: [user1._id, user2._id] },
+      }).populate('users');
+    }
 
     if (!room) {
       room = await Room.create({
         users: [user1._id, user2._id],
       });
-      room.populate('users');
-      // const io = req.app.get('io');
-      // io.of('/room').emit('newRoom', room);
+      await room.populate('users');
+
+      const newNotiData = {
+        memberNo: user2.mno,
+        notiTypeNo: 4,
+        content: '새로운 채팅방이 생성되었습니다',
+        url: `/room?mno1=${user1.mno}&mno2=${user2.mno}`,
+        notiState: 0,
+      };
+      newNoti(newNotiData);
     }
+
     let chats = await Chat.find({ room: room })
       .sort({ _id: -1 })
       .limit(req.query.limit)
@@ -56,7 +73,7 @@ export const enterRoom = async (req, res, next) => {
       res.json(roomAndChats);
     }
   } catch (error) {
-    res.status(403);
+    res.status(500).end();
     console.error(error);
     return next(error);
   }
@@ -66,13 +83,6 @@ export const loadBeforeChats = async (req, res, next) => {
   try {
     const userNo = await redisClient.get(req.cookies['sessionId']);
     if (userNo != req.query.mno1 && userNo != req.query.mno2) {
-      res.status(403).end();
-      return;
-    }
-    let room = await Room.findOne({
-      users: { $all: [req.query.mno1, req.query.mno2] },
-    });
-    if (room._id != req.query.roomId) {
       res.status(403).end();
       return;
     }
@@ -88,20 +98,49 @@ export const loadBeforeChats = async (req, res, next) => {
       nextPage: parseInt(req.query.page) + 1,
     });
   } catch (error) {
-    res.status(403);
+    res.status(500).end();
     console.error(error);
     return next(error);
   }
 };
 
-export const removeRoom = async (req, res, next) => {
+export const leaveRoom = async (req, res, next) => {
   try {
-    await Room.deleteOne({ _id: req.params.id });
-    await Chat.deleteMany({ room: req.params.id });
-    res.send('ok');
+    const userNo = await redisClient.get(req.cookies['sessionId']);
+    const sendUser = await User.findOne({ mno: userNo });
+    const roomId = req.params.roomId;
+
+    let room = await Room.findOne({
+      _id: roomId,
+      users: sendUser,
+    });
+
+    if (!room) {
+      res.status(403).end();
+      return;
+    }
+
+    room.users.pull(sendUser);
+    if (room.users.length === 0) {
+      await removeRoom(roomId);
+    } else {
+      await room.save();
+    }
+
+    res.json({ roomId });
   } catch (error) {
+    res.status(500).end();
     console.error(error);
     next(error);
+  }
+};
+
+const removeRoom = async (roomId) => {
+  try {
+    await Room.deleteOne({ _id: roomId });
+    await Chat.deleteMany({ room: roomId });
+  } catch (error) {
+    console.error(error);
   }
 };
 

@@ -1,5 +1,16 @@
 import User from '../../schemas/user';
 
+export const test = async (req, res, next) => {
+  console.log('get 요청 수신 성공@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+  try {
+    return res.json({ test: '통신 성공!' });
+  } catch (err) {
+    console.error(err);
+    res.status(403).send(err);
+    return next(err);
+  }
+};
+
 export const addUser = async (req, res, next) => {
   try {
     const user = await User.create({

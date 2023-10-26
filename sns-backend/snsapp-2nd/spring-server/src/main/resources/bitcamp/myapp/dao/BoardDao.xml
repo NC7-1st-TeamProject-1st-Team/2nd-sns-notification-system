@@ -62,12 +62,14 @@
       f.bno
     from
       sns_board b inner join sns_member m on b.mno=m.mno
-      left outer join sns_board_photo f on b.bno=f.bno
+      left outer join (
+        select bpno, bno, filepath
+        from sns_board_photo group by bno) f on b.bno=f.bno
     where
-      category=#{category}
-      order by
+      b.category=#{category}
+    order by
       b.bno desc
-      limit #{limit} offset #{offset}
+    limit #{limit} offset #{offset}
   </select>
 
   <select id="getTotalCount" parameterType="int" resultType="int">

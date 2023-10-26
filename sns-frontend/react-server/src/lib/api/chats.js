@@ -13,10 +13,11 @@ export const createRoom = ({ mno1, mno2 }) => {
   return nodeClient.post(`chatRoom/room?${queryString}`);
 };
 
-export const enterRoom = ({ mno1, mno2, limit = 25 }) => {
+export const enterRoom = ({ mno1, mno2, roomId, limit = 25 }) => {
   const queryString = qs.stringify({
     mno1,
     mno2,
+    roomId,
     limit,
     page: 1,
   });
@@ -34,8 +35,8 @@ export const loadBeforeChats = ({ roomId, mno1, mno2, limit = 25, page }) => {
   return nodeClient.get(`chatRoom/loadBeforeChats?${queryString}`);
 };
 
-export const removeRoom = ({ roomId }) => {
-  return nodeClient.delete(`chatRoom/room/${roomId}`);
+export const leaveRoom = ({ roomId }) => {
+  return nodeClient.post(`chatRoom/room/${roomId}/leave`);
 };
 
 // 채팅 전송

@@ -11,7 +11,9 @@ chatRoom.get('/loadBeforeChats', chatCtrl.loadBeforeChats);
 
 chatRoom.get('/enterRoom', chatCtrl.enterRoom);
 
-chatRoom.get('/room/:roomId', chatCtrl.removeRoom);
+chatRoom.post('/room/:roomId/leave', chatCtrl.leaveRoom);
+
+// chatRoom.delete('/room/:roomId', chatCtrl.removeRoom);
 
 chatRoom.post('/room/:roomId/chat', chatCtrl.sendChat);
 

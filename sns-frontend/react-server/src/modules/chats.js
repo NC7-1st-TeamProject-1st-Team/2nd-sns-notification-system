@@ -25,9 +25,10 @@ export const changeField = createAction(CHANGE_FIELD, ({ key, value }) => ({
   key,
   value,
 }));
-export const enterRoom = createAction(ENTER_ROOM, ({ mno1, mno2 }) => ({
+export const enterRoom = createAction(ENTER_ROOM, ({ mno1, mno2, roomId }) => ({
   mno1,
   mno2,
+  roomId,
 }));
 export const loadBeforeChats = createAction(
   LOAD_BEFORE_CHATS,

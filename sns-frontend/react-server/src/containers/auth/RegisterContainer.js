@@ -70,25 +70,13 @@ const RegisterContainer = () => {
     );
     dispatch(register({ formData }));
     dispatch(initializeForm());
-  };
+    navigate(`/auth/login`);
 
-  useEffect(() => {
-    if (authError) {
-      console.log('오류 발생');
-      console.log(authError);
-      return;
-    }
-    if (user) {
-      console.log('로그인 성공');
-      console.log(user);
-      // navigate(`/`);
-      navigate(`/myPage/${user.no}`);
-    }
-  }, [user, authError, dispatch]);
+  };
 
   const onAuthPhoneNumber = (e) => {
     e.preventDefault();
-    dispatch(getAuthCode({ phoneNumber }));
+    dispatch(getAuthCode({ phoneNumber, requestType: 'resist' }));
   };
   const onCheckPhoneNumber = (e) => {
     e.preventDefault();

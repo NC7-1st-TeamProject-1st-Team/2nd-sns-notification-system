@@ -14,6 +14,10 @@ export const update = ({ updateData, userNo }) =>
     },
   });
 
+// 탈퇴하기
+export const deleteMember = (userNo) =>
+  springClient.delete(`myPage/${userNo}/update`);
+
 export const following = (userNo) => {
   return springClient.get(`/myPage/${userNo}/following`);
 };

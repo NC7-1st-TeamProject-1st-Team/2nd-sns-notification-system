@@ -4,6 +4,9 @@ const StyledFollowButton = styled.button`
   color: #426b1f;
   background-color: transparent;
   border: 1px solid transparent;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const FollowButton = ({

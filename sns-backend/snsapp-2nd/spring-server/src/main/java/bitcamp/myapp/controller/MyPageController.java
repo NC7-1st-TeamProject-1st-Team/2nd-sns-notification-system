@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -155,6 +156,8 @@ public class MyPageController {
 
     if (member.getEmail() == null || member.getEmail().equals(" ") || member.getEmail().isEmpty()) {
       member.setEmail(null);
+    } else {
+      member.setEmail(myPage.getEmail());
     }
 
     if (memberService.update(member) == 0 || myPageService.update(myPage) == 0) {
@@ -170,14 +173,28 @@ public class MyPageController {
     }
   }
 
-  @GetMapping("{no}/update")
-  public String delete(
-      Member member,
+  @DeleteMapping("{no}/update")
+  public ResponseEntity delete(
       @PathVariable int no,
-      Model model,
-      HttpSession session) throws Exception {
-    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
-    MyPage myPage = myPageService.get(member.getNo());
+      @CookieValue(value = "sessionId", required = false) Cookie sessionCookie) throws Exception {
+    Member member = memberService.get(no);
+    MyPage myPage = myPageService.get(no);
+
+    LoginUser loginUser = null;
+    try {
+      String sessionId = sessionCookie.getValue();
+      String temp = (String) redisService.getValueOps().get(sessionId);
+      if (temp != null) {
+        int loginUserNo = Integer.parseInt(temp);
+        loginUser = new LoginUser(memberService.get(loginUserNo));
+      } else { // 해당하는 유저가 없을 경우
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      // 예외 발생 시 처리
+      return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
+    }
 
     if (loginUser.getNo() == myPage.getNo()) {
       member.setPhoto(null);
@@ -193,13 +210,12 @@ public class MyPageController {
       myPage.setVisitCount(0);
 
       if (memberService.update(member) == 0 || myPageService.update(myPage) == 0) {
-        throw new Exception("회원이 없습니다.");
+        return new ResponseEntity<>("회원이 없습니다.", HttpStatus.FORBIDDEN);
       } else {
-        session.invalidate();
-        return "redirect:/";
+        return new ResponseEntity<>(HttpStatus.OK);
       }
     } else {
-      return "redirect:/error";
+      return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 
   }

@@ -37,8 +37,9 @@ const StyledLabel = styled.label`
 
 const ResultText = styled.p`
   color: black;
-  font-weight: bold;
+  font-weight: normal;
   margin-top: 1px;
+  margin-right: 80px;
 `;
 
 const NewPasswordForm = styled.div`
@@ -46,7 +47,7 @@ const NewPasswordForm = styled.div`
   align-items: center;
   width: 100%;
   justify-content: center;
-  margin-left: 760px;
+  //margin-left: 300px;
 `;
 
 const StyledInput = styled.input`
@@ -71,6 +72,11 @@ const SubmitButton = styled(Button)`
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: normal;
+
+  &:hover {
+    background-color: #5d962c;
+  }
 `;
 
 const CommonButton = styled(Button)`
@@ -84,6 +90,11 @@ const CommonButton = styled(Button)`
   margin-left: 25px;
   margin-bottom: 100px;
   margin-top: 80px;
+  font-weight: normal;
+
+  &:hover {
+    background-color: #5d962c;
+  }
 `;
 
 const PwFindComponent = ({

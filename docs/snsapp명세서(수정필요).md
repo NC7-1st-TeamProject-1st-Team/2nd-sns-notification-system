@@ -2,8 +2,8 @@
 
 >- 목차
 >1. 프로젝트 목적
->   - 목표 
->   - 구현목표 
+>   - 목표
+>   - 구현목표
 >   - 프로젝트 정보
 >2. 비즈니스 요구사항 
 >4. 상세 요구사항 
@@ -45,7 +45,7 @@
 > ### Tool : IntelliJ, VSCODE, Firebase
 
 > ### API :  Papago Translation Api, Papago Detect Api, Naver Login Api
- 
+
 > ### GIT : https://github.com/NC7-1st-TeamProject-1st-Team
 
 
@@ -64,7 +64,7 @@
 
 
 ## 4.유스케이스 모델링
-![img.png](image/Usecase.png)
+![img.png](image/2nd_usecase.png)
 
 ## 5. ERD
 ![img_1.png](image/ERD.png)
@@ -77,8 +77,5 @@
       + 채팅 화면
 
  ### 7.아키택처
-- API
-  ![img.png](image/ar2.png)
-
-- Cloud
-  ![img.png](image/ar1.JPG)
+- API & Cloud
+  ![img.png](image/2ndar231018.png)

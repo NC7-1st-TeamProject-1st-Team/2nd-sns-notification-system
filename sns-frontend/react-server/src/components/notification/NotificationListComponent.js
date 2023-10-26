@@ -13,8 +13,8 @@ const NotificationListStyledContainer = styled.div`
 `;
 
 const ListContainer = styled.div`
-  width: 50%;
-  max-height: 100%;
+  width: 40%;
+  height: 600px;
   overflow-y: auto;
   border: 1px solid #ccc;
   border-radius: 5px;
