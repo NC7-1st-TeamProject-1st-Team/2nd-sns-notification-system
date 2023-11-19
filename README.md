@@ -40,11 +40,11 @@
 
 > ### Language : JAVA, JavaScript
 
-> ### Framwork :  React, Node.js, Spring Boot
+> ### Framwork :  React, Express.js, Spring Boot
 
-> ### Tool : IntelliJ, VSCODE, Firebase
+> ### Tool : IntelliJ, VScode, Postman
 
-> ### API :  Papago Translation Api, Papago Detect Api, Naver Login Api
+> ### API :  Papago Translation Api, Papago Detect Api, clova voice, Firebase, Simple & Easy Notification Service
 
 > ### GIT : https://github.com/NC7-1st-TeamProject-1st-Team
 
