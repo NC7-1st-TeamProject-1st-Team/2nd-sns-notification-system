@@ -44,7 +44,7 @@
 
 > ### Tool : IntelliJ, VScode, Postman
 
-> ### API :  Papago Translation Api, Papago Detect Api, clova voice, Firebase, Simple & Easy Notification Service
+> ### API :  Papago Translation Api, Papago Detect Api, Clova Voice, Firebase, Simple & Easy Notification Service
 
 > ### GIT : https://github.com/NC7-1st-TeamProject-1st-Team
 
