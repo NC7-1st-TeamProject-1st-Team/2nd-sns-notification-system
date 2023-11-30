@@ -1,4 +1,5 @@
 # 1조 힐링캠프조 ( snsapp )
+[프로젝트 역할 분담 및 시연 영상](https://ncamp.magicecole.com/Home/Project/023ef993-a000-40b8-8cfa-0c1d9b19299c?page=1&groupId=0)
 
 >- 목차
 >1. 프로젝트 목적
