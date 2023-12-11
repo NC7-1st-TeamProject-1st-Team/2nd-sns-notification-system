@@ -69,7 +69,7 @@
 
 ## 3. 비즈니스 상세 요구사항
 
-[2차 팀 프로젝트 요구 명세서 - 이용자 기능 요구사항.pdf](2%EC%B0%A8%20%ED%8C%80%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EC%9A%94%EA%B5%AC%20%EB%AA%85%EC%84%B8%EC%84%9C%20-%20%EC%9D%B4%EC%9A%A9%EC%9E%90%20%EA%B8%B0%EB%8A%A5%20%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD.pdf)
+[2차 팀 프로젝트 요구 명세서 - 이용자 기능 요구사항.pdf](./docs/Requirements/2%EC%B0%A8%20%ED%8C%80%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EC%9A%94%EA%B5%AC%20%EB%AA%85%EC%84%B8%EC%84%9C%20-%20%EC%9D%B4%EC%9A%A9%EC%9E%90%20%EA%B8%B0%EB%8A%A5%20%EC%9A%94%EA%B5%AC%EC%82%AC%ED%95%AD.pdf)
 
 
 | **우선순위** |         **상세**                       |
